@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Reproduce every number in results/. Needs a CUDA GPU (~1 h 40 min on an RTX 5070 Laptop).
+# Reproduce every number in results/. Needs a CUDA GPU (about 2.5 h on an RTX 5070 Laptop).
 # Each step skips work whose result file already exists, so the script can be resumed.
 set -euo pipefail
 
@@ -34,6 +34,12 @@ done
 
 for arm in inbatch dense_margin95; do
   run "results/runs/${arm}_lora_seed1.json" $PY scripts/train.py --arm "$arm" --seed 1 --lora
+done
+
+# Batch-size ablation: 128 examples per step via GradCache (same peak memory as 32).
+for arm in inbatch dense_margin95; do
+  run "results/runs/${arm}_full_bs128_seed1.json" \
+    $PY scripts/train.py --arm "$arm" --seed 1 --batch-size 128 --gradcache-mini-batch 32
 done
 
 $PY scripts/summarize.py

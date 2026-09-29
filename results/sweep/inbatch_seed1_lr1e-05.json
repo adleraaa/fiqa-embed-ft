@@ -1,0 +1,41 @@
+{
+ "name": "inbatch_seed1",
+ "arm": "inbatch",
+ "method": "full",
+ "seed": 1,
+ "config": {
+  "base_model": "BAAI/bge-small-en-v1.5",
+  "epochs_max": 2,
+  "batch_size": 32,
+  "lr": 1e-05,
+  "train_max_seq_length": 256,
+  "lora_rank": null,
+  "train_examples": 14166,
+  "trainable_params": 33360000,
+  "gpu": "NVIDIA GeForce RTX 5070 Laptop GPU"
+ },
+ "best_dev_epoch": 2.0,
+ "best_dev_ndcg@10": 0.39922526476671744,
+ "dev_history": [
+  {
+   "epoch": 1.0,
+   "steps": 443,
+   "ndcg@10": 0.39868973329539764,
+   "recall@10": 0.4571577145077145,
+   "recall@100": 0.7192628760128761,
+   "mrr@10": 0.48067857142857146
+  },
+  {
+   "epoch": 2.0,
+   "steps": 886,
+   "ndcg@10": 0.39922526476671744,
+   "recall@10": 0.4570577145077145,
+   "recall@100": 0.7238335830835831,
+   "mrr@10": 0.4814142857142857
+  }
+ ],
+ "train_seconds": 198.75729849992786,
+ "dev_eval_seconds": 75.00321029999759,
+ "global_steps": 886,
+ "peak_vram_gb": 2.4135489463806152
+}
