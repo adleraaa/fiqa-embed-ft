@@ -7,13 +7,25 @@ Sources (Hugging Face Hub):
 
 from __future__ import annotations
 
-import random
 from collections.abc import Iterable, Mapping
 from dataclasses import dataclass
 
 # bge-*-en-v1.5 was trained with this prefix on retrieval queries (documents get no prefix).
 # We use it everywhere (baseline, training anchors, evaluation) so that all arms are comparable.
 QUERY_INSTRUCTION = "Represent this sentence for searching relevant passages: "
+
+# Hub commits the results were produced with; pinned so an upstream update cannot
+# silently change the numbers.
+DATASET_REVISIONS = {
+    "BeIR/fiqa": "979c07a7cb5ccc6ca009792241fa1250b98055dd",
+    "BeIR/fiqa-qrels": "252958f2d646e22cab6d0c72dd3f0d5de6d0655a",
+}
+
+BASE_MODEL = "BAAI/bge-small-en-v1.5"
+MODEL_REVISIONS = {
+    "BAAI/bge-small-en-v1.5": "5c38ec7c405ec4b44b94cc5a9bb96e735b38267a",
+    "BAAI/bge-base-en-v1.5": "a5beb1e3e68b9ab74eb54cfd186867f64f240e1a",
+}
 
 Qrels = dict[str, dict[str, int]]  # query id -> {doc id: relevance}
 
@@ -52,18 +64,10 @@ def build_qrels(rows: Iterable[Mapping]) -> Qrels:
 
 def train_pairs(qrels: Qrels) -> list[tuple[str, str]]:
     """All (query id, positive doc id) pairs in a deterministic order."""
-    return [(qid, did) for qid in sorted(qrels, key=_id_key) for did in sorted(qrels[qid])]
+    return [(qid, did) for qid in sorted(qrels, key=id_key) for did in sorted(qrels[qid])]
 
 
-def sample_queries(qrels: Qrels, n: int | None, seed: int = 0) -> Qrels:
-    """Subsample queries (used to keep per-epoch dev evaluation cheap). n=None keeps all."""
-    if n is None or n >= len(qrels):
-        return qrels
-    keep = random.Random(seed).sample(sorted(qrels, key=_id_key), n)
-    return {qid: qrels[qid] for qid in keep}
-
-
-def _id_key(x: str) -> tuple[int, str]:
+def id_key(x: str) -> tuple[int, str]:
     # Numeric ids sort numerically, anything else lexicographically after them.
     return (int(x), "") if x.isdigit() else (1 << 62, x)
 
@@ -71,9 +75,10 @@ def _id_key(x: str) -> tuple[int, str]:
 def load_fiqa() -> FiQA:
     from datasets import load_dataset
 
-    corpus_ds = load_dataset("BeIR/fiqa", "corpus", split="corpus")
-    query_ds = load_dataset("BeIR/fiqa", "queries", split="queries")
-    qrels_ds = load_dataset("BeIR/fiqa-qrels")
+    fiqa_rev, qrels_rev = DATASET_REVISIONS["BeIR/fiqa"], DATASET_REVISIONS["BeIR/fiqa-qrels"]
+    corpus_ds = load_dataset("BeIR/fiqa", "corpus", split="corpus", revision=fiqa_rev)
+    query_ds = load_dataset("BeIR/fiqa", "queries", split="queries", revision=fiqa_rev)
+    qrels_ds = load_dataset("BeIR/fiqa-qrels", revision=qrels_rev)
 
     corpus = {str(r["_id"]): doc_text(r["title"], r["text"]) for r in corpus_ds}
     queries = {str(r["_id"]): r["text"].strip() for r in query_ds}

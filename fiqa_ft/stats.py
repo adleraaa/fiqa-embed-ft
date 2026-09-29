@@ -68,3 +68,21 @@ def paired_randomization_test(
     signs = rng.choice(np.array([-1.0, 1.0]), size=(n_resamples, len(d)))
     null = np.abs((signs * d).mean(axis=1))
     return float((np.count_nonzero(null >= observed - 1e-12) + 1) / (n_resamples + 1))
+
+
+def holm_adjust(p_values: Sequence[float]) -> list[float]:
+    """Holm-Bonferroni adjusted p-values, returned in the input order.
+
+    Controls the family-wise error rate over all tests in the family: an adjusted
+    p below 0.05 means the difference survives correction for every comparison made.
+    """
+    m = len(p_values)
+    order = sorted(range(m), key=lambda i: p_values[i])
+    adjusted = [0.0] * m
+    running_max = 0.0
+    for rank, i in enumerate(order):
+        # the smallest p is multiplied by m, the next by m - 1, ...; the running max
+        # keeps adjusted p-values in the same order as the raw ones
+        running_max = max(running_max, min(1.0, (m - rank) * p_values[i]))
+        adjusted[i] = running_max
+    return adjusted

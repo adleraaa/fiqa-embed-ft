@@ -3,6 +3,7 @@ import pytest
 
 from fiqa_ft.stats import (
     bootstrap_ci,
+    holm_adjust,
     paired_bootstrap_delta,
     paired_randomization_test,
     seed_average,
@@ -59,3 +60,10 @@ def test_length_mismatch_raises():
         paired_randomization_test([1, 2], [1, 2, 3])
     with pytest.raises(ValueError):
         paired_bootstrap_delta([1, 2], [1, 2, 3])
+
+
+def test_holm_adjust_matches_hand_computation():
+    # sorted: 0.01 x 3 = 0.03, 0.02 x 2 = 0.04, 0.04 x 1 = 0.04 (then back to input order)
+    assert holm_adjust([0.04, 0.01, 0.02]) == pytest.approx([0.04, 0.03, 0.04])
+    assert holm_adjust([0.5, 0.9]) == pytest.approx([1.0, 1.0])  # capped at 1
+    assert holm_adjust([]) == []

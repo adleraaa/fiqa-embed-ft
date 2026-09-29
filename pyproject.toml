@@ -18,7 +18,7 @@ dependencies = [
 
 [project.optional-dependencies]
 train = [
-    "sentence-transformers>=6.1",
+    "sentence-transformers>=6.1,<7",  # train.py imports 6.x module paths
     "datasets>=3.0",
     "accelerate>=1.0",
     "peft>=0.13",

@@ -14,7 +14,7 @@ import time
 
 import torch
 
-from fiqa_ft.data import load_fiqa
+from fiqa_ft.data import BASE_MODEL, MODEL_REVISIONS, load_fiqa
 from fiqa_ft.evaluation import evaluate_dense, score_results, write_json
 from fiqa_ft.retrieval import bm25_search
 
@@ -22,7 +22,7 @@ from fiqa_ft.retrieval import bm25_search
 def main() -> None:
     p = argparse.ArgumentParser()
     p.add_argument("--name", required=True)
-    p.add_argument("--model", default="BAAI/bge-small-en-v1.5")
+    p.add_argument("--model", default=BASE_MODEL)
     p.add_argument("--bm25", action="store_true")
     p.add_argument("--no-instruction", action="store_true")
     p.add_argument("--split", default="test", choices=["dev", "test"])
@@ -41,8 +41,10 @@ def main() -> None:
         from sentence_transformers import SentenceTransformer
 
         device = "cuda" if torch.cuda.is_available() else "cpu"
-        model = SentenceTransformer(args.model, device=device)
+        revision = MODEL_REVISIONS.get(args.model)
+        model = SentenceTransformer(args.model, device=device, revision=revision)
         record["system"] = args.model
+        record["revision"] = revision
         record["use_instruction"] = not args.no_instruction
         record["max_seq_length"] = model.max_seq_length
         record.update(

@@ -1,6 +1,6 @@
 import torch
 
-from fiqa_ft.data import build_qrels, doc_text, sample_queries, train_pairs
+from fiqa_ft.data import build_qrels, doc_text, id_key, train_pairs
 from fiqa_ft.retrieval import bm25_search, ranked_ids, to_results, top_k
 
 
@@ -24,11 +24,9 @@ def test_train_pairs_numeric_order():
     assert train_pairs(qrels) == [("9", "c"), ("10", "a"), ("10", "b")]
 
 
-def test_sample_queries_is_deterministic_subset():
-    qrels = {str(i): {"d": 1} for i in range(100)}
-    s1, s2 = sample_queries(qrels, 10, seed=1), sample_queries(qrels, 10, seed=1)
-    assert s1 == s2 and len(s1) == 10 and set(s1) <= set(qrels)
-    assert sample_queries(qrels, None) is qrels
+def test_id_key_sorts_numeric_ids_numerically_and_does_not_crash_on_others():
+    # sorted(ids, key=int) would raise on "q7"; mining and training both sort ids.
+    assert sorted(["10", "q7", "9", "a"], key=id_key) == ["9", "10", "a", "q7"]
 
 
 def test_top_k_matches_full_sort_across_chunks():
