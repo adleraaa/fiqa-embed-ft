@@ -12,6 +12,7 @@ Example:
   python scripts/train.py --arm inbatch --seed 1
   python scripts/train.py --arm dense_margin95 --seed 1
   python scripts/train.py --arm inbatch --seed 1 --lora
+  python scripts/train.py --arm inbatch --seed 1 --batch-size 128 --gradcache-mini-batch 32
 """
 
 from __future__ import annotations
@@ -30,7 +31,10 @@ from sentence_transformers import (
     SentenceTransformerTrainingArguments,
 )
 from sentence_transformers.base.sampler import BatchSamplers
-from sentence_transformers.sentence_transformer.losses import MultipleNegativesRankingLoss
+from sentence_transformers.sentence_transformer.losses import (
+    CachedMultipleNegativesRankingLoss,
+    MultipleNegativesRankingLoss,
+)
 
 from fiqa_ft.data import QUERY_INSTRUCTION, load_fiqa, train_pairs
 from fiqa_ft.evaluation import evaluate_dense, write_json
@@ -77,13 +81,22 @@ def main() -> None:
     p.add_argument("--lora", action="store_true")
     p.add_argument("--lora-rank", type=int, default=16)
     p.add_argument(
+        "--gradcache-mini-batch",
+        type=int,
+        default=None,
+        help="use GradCache (CachedMNRL) so --batch-size can exceed what fits in memory",
+    )
+    p.add_argument(
         "--dev-only",
         action="store_true",
         help="hyperparameter search: report dev scores only, never touch test",
     )
     args = p.parse_args()
     lr = args.lr or (2e-4 if args.lora else 2e-5)
-    run_name = f"{args.arm}{'_lora' if args.lora else ''}_seed{args.seed}"
+    method = ("lora" if args.lora else "full") + (
+        f"_bs{args.batch_size}" if args.batch_size != 32 else ""
+    )
+    run_name = f"{args.arm}{'' if method == 'full' else '_' + method}_seed{args.seed}"
 
     fiqa = load_fiqa()
     train_ds = build_dataset(fiqa, args.arm)
@@ -129,11 +142,17 @@ def main() -> None:
         seed=args.seed,
         data_seed=args.seed,
     )
+    if args.gradcache_mini_batch:
+        # GradCache computes the same loss as one big batch, but back-propagates in
+        # mini-batches, so memory is set by the mini-batch size.
+        loss = CachedMultipleNegativesRankingLoss(model, mini_batch_size=args.gradcache_mini_batch)
+    else:
+        loss = MultipleNegativesRankingLoss(model)
     trainer = SentenceTransformerTrainer(
         model=model,
         args=training_args,
         train_dataset=train_ds,
-        loss=MultipleNegativesRankingLoss(model),
+        loss=loss,
         evaluator=evaluator,
         callbacks=[EarlyStopOnDev(evaluator, patience=1)],
     )
@@ -148,12 +167,13 @@ def main() -> None:
     record = {
         "name": run_name,
         "arm": args.arm,
-        "method": "lora" if args.lora else "full",
+        "method": method,
         "seed": args.seed,
         "config": {
             "base_model": BASE_MODEL,
             "epochs_max": args.epochs,
             "batch_size": args.batch_size,
+            "gradcache_mini_batch": args.gradcache_mini_batch,
             "lr": lr,
             "train_max_seq_length": args.max_seq_length,
             "lora_rank": args.lora_rank if args.lora else None,

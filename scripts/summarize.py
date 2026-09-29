@@ -36,6 +36,8 @@ LABELS = {
     "bm25/full": "(b) + BM25 hard negatives",
     "dense_nofilter/full": "(c0) + dense hard negatives, no filter",
     "dense_margin95/full": "(c) + dense hard negatives, 95% margin filter",
+    "inbatch/full_bs128": "(a) with batch 128 (GradCache)",
+    "dense_margin95/full_bs128": "(c) with batch 128 (GradCache)",
     "inbatch/lora": "(a) with LoRA r=16",
     "dense_margin95/lora": "(c) with LoRA r=16",
 }
@@ -132,7 +134,27 @@ def plot(rows: list[dict], path: str) -> None:
     fig.savefig(path, dpi=150)
 
 
+def sweep_markdown() -> str:
+    """Dev-only learning-rate search table (results/sweep/*.json)."""
+    dev_base = read_json(RUNS / "dev_baseline_bge-small.json")["mean"]["ndcg@10"]
+    lines = [
+        f"Zero-shot dev nDCG@10: {dev_base:.4f}\n",
+        "| Arm | lr | dev nDCG@10 epoch 1 | epoch 2 | best |",
+        "|---|---|---|---|---|",
+    ]
+    runs = [read_json(p) for p in Path("results/sweep").glob("*.json")]
+    for r in sorted(runs, key=lambda r: (r["arm"], r["config"]["lr"])):
+        per_epoch = [f"{h['ndcg@10']:.4f}" for h in r["dev_history"]]
+        per_epoch += [""] * (2 - len(per_epoch))
+        lines.append(
+            f"| {r['arm']} | {r['config']['lr']:g} | {' | '.join(per_epoch[:2])} "
+            f"| {r['best_dev_ndcg@10']:.4f} |"
+        )
+    return "\n".join(lines) + "\n"
+
+
 def main() -> None:
+    Path("results/sweep/summary.md").write_text(sweep_markdown(), encoding="utf-8", newline="\n")
     systems = load_systems()
     base_pq = systems[BASELINE][0]["per_query"]["ndcg@10"]
     ref_runs = systems.get("inbatch/full")
