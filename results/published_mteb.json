@@ -1,0 +1,16 @@
+{
+ "BAAI/bge-small-en-v1.5": {
+  "source": "https://raw.githubusercontent.com/embeddings-benchmark/results/main/results/BAAI__bge-small-en-v1.5/external/FiQA2018.json",
+  "ndcg@10": 0.40343,
+  "recall@10": 0.46387999999999996,
+  "recall@100": 0.69552,
+  "mrr@10": 0.48776
+ },
+ "BAAI/bge-base-en-v1.5": {
+  "source": "https://raw.githubusercontent.com/embeddings-benchmark/results/main/results/BAAI__bge-base-en-v1.5/external/FiQA2018.json",
+  "ndcg@10": 0.40646,
+  "recall@10": 0.48135,
+  "recall@100": 0.74224,
+  "mrr@10": 0.4862
+ }
+}

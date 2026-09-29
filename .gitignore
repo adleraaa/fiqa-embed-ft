@@ -10,3 +10,4 @@ checkpoints/
 *.bin
 *.pt
 .env
+logs/

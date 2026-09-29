@@ -11,6 +11,20 @@ from collections.abc import Sequence
 import numpy as np
 
 
+def seed_average(per_query_runs: Sequence[dict[str, float]]) -> dict[str, float]:
+    """Average per-query scores over several seeds of the same system.
+
+    All runs must cover the same queries; a mismatch means the runs were scored on
+    different splits and must not be averaged.
+    """
+    if not per_query_runs:
+        raise ValueError("need at least one run")
+    qids = set(per_query_runs[0])
+    if any(set(r) != qids for r in per_query_runs[1:]):
+        raise ValueError("runs cover different queries")
+    return {q: float(np.mean([r[q] for r in per_query_runs])) for q in sorted(qids)}
+
+
 def bootstrap_ci(
     values: Sequence[float], n_resamples: int = 10_000, alpha: float = 0.05, seed: int = 0
 ) -> tuple[float, float, float]:

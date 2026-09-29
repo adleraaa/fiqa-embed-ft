@@ -1,0 +1,19 @@
+{
+ "name": "dense_nofilter",
+ "method": "dense",
+ "depth": 1000,
+ "seed": 0,
+ "seconds": 80.6758837000234,
+ "triplets": 14166,
+ "pairs": 14166,
+ "dropped_positive": 32043,
+ "dropped_skip_top": 0,
+ "dropped_margin": 0,
+ "random_fallback": 0,
+ "config": {
+  "n_negatives": 1,
+  "pool_size": 30,
+  "skip_top": 0,
+  "margin": null
+ }
+}

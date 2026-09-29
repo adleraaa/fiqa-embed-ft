@@ -18,7 +18,7 @@ dependencies = [
 
 [project.optional-dependencies]
 train = [
-    "sentence-transformers>=5.0",
+    "sentence-transformers>=6.1",
     "datasets>=3.0",
     "accelerate>=1.0",
     "peft>=0.13",

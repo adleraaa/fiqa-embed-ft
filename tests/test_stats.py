@@ -1,7 +1,12 @@
 import numpy as np
 import pytest
 
-from fiqa_ft.stats import bootstrap_ci, paired_bootstrap_delta, paired_randomization_test
+from fiqa_ft.stats import (
+    bootstrap_ci,
+    paired_bootstrap_delta,
+    paired_randomization_test,
+    seed_average,
+)
 
 
 def test_bootstrap_ci_contains_mean_and_is_ordered():
@@ -37,6 +42,16 @@ def test_randomization_test_null_is_not_significant():
 def test_identical_systems_give_p_one():
     a = [0.1, 0.5, 0.9]
     assert paired_randomization_test(a, a, n_resamples=100) == pytest.approx(1.0)
+
+
+def test_seed_average():
+    runs = [{"q1": 0.2, "q2": 1.0}, {"q1": 0.4, "q2": 0.0}]
+    assert seed_average(runs) == {"q1": pytest.approx(0.3), "q2": pytest.approx(0.5)}
+
+
+def test_seed_average_rejects_different_query_sets():
+    with pytest.raises(ValueError):
+        seed_average([{"q1": 0.2}, {"q2": 0.4}])
 
 
 def test_length_mismatch_raises():
