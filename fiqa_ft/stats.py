@@ -1,0 +1,56 @@
+"""Query-level bootstrap confidence intervals and paired significance tests.
+
+Queries are the unit of resampling: the test set is a sample of 648 queries, and that
+sampling is the main source of uncertainty in a single nDCG@10 number.
+"""
+
+from __future__ import annotations
+
+from collections.abc import Sequence
+
+import numpy as np
+
+
+def bootstrap_ci(
+    values: Sequence[float], n_resamples: int = 10_000, alpha: float = 0.05, seed: int = 0
+) -> tuple[float, float, float]:
+    """(mean, lower, upper) percentile bootstrap CI of the mean."""
+    x = np.asarray(values, dtype=float)
+    rng = np.random.default_rng(seed)
+    idx = rng.integers(0, len(x), size=(n_resamples, len(x)))
+    means = x[idx].mean(axis=1)
+    lo, hi = np.quantile(means, [alpha / 2, 1 - alpha / 2])
+    return float(x.mean()), float(lo), float(hi)
+
+
+def paired_bootstrap_delta(
+    a: Sequence[float],
+    b: Sequence[float],
+    n_resamples: int = 10_000,
+    alpha: float = 0.05,
+    seed: int = 0,
+) -> tuple[float, float, float]:
+    """CI of mean(b - a) where a[i] and b[i] are scores for the same query."""
+    a_, b_ = np.asarray(a, dtype=float), np.asarray(b, dtype=float)
+    if a_.shape != b_.shape:
+        raise ValueError("paired inputs must have the same length")
+    return bootstrap_ci(b_ - a_, n_resamples=n_resamples, alpha=alpha, seed=seed)
+
+
+def paired_randomization_test(
+    a: Sequence[float], b: Sequence[float], n_resamples: int = 10_000, seed: int = 0
+) -> float:
+    """Two-sided sign-flip permutation test for mean(b - a) == 0.
+
+    Under the null the two systems are exchangeable per query, so each difference
+    is equally likely to have either sign. The +1 terms keep p > 0 (Phipson & Smyth 2010).
+    """
+    a_, b_ = np.asarray(a, dtype=float), np.asarray(b, dtype=float)
+    if a_.shape != b_.shape:
+        raise ValueError("paired inputs must have the same length")
+    d = b_ - a_
+    observed = abs(d.mean())
+    rng = np.random.default_rng(seed)
+    signs = rng.choice(np.array([-1.0, 1.0]), size=(n_resamples, len(d)))
+    null = np.abs((signs * d).mean(axis=1))
+    return float((np.count_nonzero(null >= observed - 1e-12) + 1) / (n_resamples + 1))
