@@ -141,7 +141,7 @@ def main() -> None:
     order = [k for k in LABELS if k in systems] + sorted(set(systems) - set(LABELS))
     rows = [summarize_system(k, systems[k], base_pq, ref_pq) for k in order]
     write_json("results/summary.json", rows)
-    Path("results/summary.md").write_text(to_markdown(rows), encoding="utf-8")
+    Path("results/summary.md").write_text(to_markdown(rows), encoding="utf-8", newline="\n")
     plot(rows, "results/ndcg10.png")
     print(to_markdown(rows))
 

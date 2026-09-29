@@ -76,7 +76,11 @@ def main() -> None:
     p.add_argument("--max-seq-length", type=int, default=256)
     p.add_argument("--lora", action="store_true")
     p.add_argument("--lora-rank", type=int, default=16)
-    p.add_argument("--max-steps", type=int, default=-1, help="for smoke tests only")
+    p.add_argument(
+        "--dev-only",
+        action="store_true",
+        help="hyperparameter search: report dev scores only, never touch test",
+    )
     args = p.parse_args()
     lr = args.lr or (2e-4 if args.lora else 2e-5)
     run_name = f"{args.arm}{'_lora' if args.lora else ''}_seed{args.seed}"
@@ -109,7 +113,6 @@ def main() -> None:
     training_args = SentenceTransformerTrainingArguments(
         output_dir=str(out_dir),
         num_train_epochs=args.epochs,
-        max_steps=args.max_steps,
         per_device_train_batch_size=args.batch_size,
         learning_rate=lr,
         warmup_ratio=0.1,
@@ -141,11 +144,7 @@ def main() -> None:
     wall = time.perf_counter() - t0
     peak_vram_gb = torch.cuda.max_memory_allocated() / 2**30
 
-    evaluator.restore_best(model)
-    model.max_seq_length = eval_max_len
-    test = evaluate_dense(model, fiqa.queries, fiqa.corpus, fiqa.qrels["test"])
     shutil.rmtree(out_dir, ignore_errors=True)
-
     record = {
         "name": run_name,
         "arm": args.arm,
@@ -163,19 +162,23 @@ def main() -> None:
             "gpu": torch.cuda.get_device_name(0),
         },
         "best_dev_epoch": evaluator.best_epoch,
+        "best_dev_ndcg@10": evaluator.best_score,
         "dev_history": evaluator.history,
         "train_seconds": wall - evaluator.seconds,  # excludes per-epoch dev evaluation
         "dev_eval_seconds": evaluator.seconds,
         "global_steps": trainer.state.global_step,
         "peak_vram_gb": peak_vram_gb,
-        "split": "test",
-        "mean": test["mean"],
-        "per_query": test["per_query"],
     }
-    if args.max_steps > 0:
-        print("smoke test, not writing results", {k: round(v, 4) for k, v in test["mean"].items()})
-    else:
-        write_json(f"results/runs/{run_name}.json", record)
+    if args.dev_only:
+        write_json(f"results/sweep/{run_name}_lr{lr:g}.json", record)
+        print(run_name, f"lr={lr:g}", "best dev nDCG@10", round(evaluator.best_score, 4))
+        return
+
+    evaluator.restore_best(model)
+    model.max_seq_length = eval_max_len
+    test = evaluate_dense(model, fiqa.queries, fiqa.corpus, fiqa.qrels["test"])
+    record.update(split="test", mean=test["mean"], per_query=test["per_query"])
+    write_json(f"results/runs/{run_name}.json", record)
     print(
         run_name,
         {k: round(v, 4) for k, v in test["mean"].items()},
