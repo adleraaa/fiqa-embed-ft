@@ -2,18 +2,37 @@
  "name": "bm25",
  "method": "bm25",
  "depth": 1000,
- "seed": 0,
- "seconds": 19.490978199988604,
- "triplets": 14166,
- "pairs": 14166,
- "dropped_positive": 20001,
- "dropped_skip_top": 0,
- "dropped_margin": 0,
- "random_fallback": 0,
+ "retrieval_seconds": 6.107465700013563,
  "config": {
   "n_negatives": 1,
   "pool_size": 30,
   "skip_top": 0,
   "margin": null
+ },
+ "per_seed": {
+  "1": {
+   "triplets": 14166,
+   "pairs": 14166,
+   "dropped_positive": 20001,
+   "dropped_skip_top": 0,
+   "dropped_margin": 0,
+   "random_fallback": 0
+  },
+  "2": {
+   "triplets": 14166,
+   "pairs": 14166,
+   "dropped_positive": 20001,
+   "dropped_skip_top": 0,
+   "dropped_margin": 0,
+   "random_fallback": 0
+  },
+  "3": {
+   "triplets": 14166,
+   "pairs": 14166,
+   "dropped_positive": 20001,
+   "dropped_skip_top": 0,
+   "dropped_margin": 0,
+   "random_fallback": 0
+  }
  }
 }

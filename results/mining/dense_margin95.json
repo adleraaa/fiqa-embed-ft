@@ -2,18 +2,37 @@
  "name": "dense_margin95",
  "method": "dense",
  "depth": 1000,
- "seed": 0,
- "seconds": 85.633067100076,
- "triplets": 14166,
- "pairs": 14166,
- "dropped_positive": 48121,
- "dropped_skip_top": 0,
- "dropped_margin": 5284580,
- "random_fallback": 3601,
+ "retrieval_seconds": 46.008788599981926,
  "config": {
   "n_negatives": 1,
   "pool_size": 30,
   "skip_top": 0,
   "margin": 0.95
+ },
+ "per_seed": {
+  "1": {
+   "triplets": 14166,
+   "pairs": 14166,
+   "dropped_positive": 48121,
+   "dropped_skip_top": 0,
+   "dropped_margin": 5284580,
+   "random_fallback": 3601
+  },
+  "2": {
+   "triplets": 14166,
+   "pairs": 14166,
+   "dropped_positive": 48121,
+   "dropped_skip_top": 0,
+   "dropped_margin": 5284580,
+   "random_fallback": 3601
+  },
+  "3": {
+   "triplets": 14166,
+   "pairs": 14166,
+   "dropped_positive": 48121,
+   "dropped_skip_top": 0,
+   "dropped_margin": 5284580,
+   "random_fallback": 3601
+  }
  }
 }

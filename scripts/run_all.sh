@@ -5,7 +5,7 @@
 set -euo pipefail
 
 PY=${PY:-python}
-LR=${LR:-5e-05} # best mean dev nDCG@10 in results/sweep/summary.md
+LR=${LR:-5e-06} # best mean dev nDCG@10 over both swept arms, results/sweep/summary.md
 run() { # run <result file> <command...>
   local out=$1; shift
   if [[ -f $out ]]; then echo "skip $out"; else echo "== $*"; "$@"; fi

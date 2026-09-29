@@ -5,39 +5,57 @@
  "seed": 1,
  "config": {
   "base_model": "BAAI/bge-small-en-v1.5",
-  "epochs_max": 2,
+  "base_model_revision": "5c38ec7c405ec4b44b94cc5a9bb96e735b38267a",
+  "epochs_max": 4,
+  "patience": 2,
   "batch_size": 32,
+  "gradcache_mini_batch": null,
   "lr": 2e-05,
   "train_max_seq_length": 256,
   "lora_rank": null,
   "train_examples": 14166,
   "trainable_params": 33360000,
-  "gpu": "NVIDIA GeForce RTX 5070 Laptop GPU"
+  "gpu": "NVIDIA GeForce RTX 5070 Laptop GPU",
+  "versions": {
+   "torch": "2.9.0+cu129",
+   "cuda": "12.9",
+   "sentence_transformers": "6.1.0",
+   "transformers": "5.17.0"
+  }
  },
- "best_dev_epoch": 2.0,
+ "base_dev_ndcg@10": 0.4090426201137478,
+ "best_dev_epoch": 1.0,
+ "best_dev_ndcg@10": 0.4045606099275054,
+ "base_won_on_dev": true,
  "dev_history": [
+  {
+   "epoch": 0,
+   "steps": 0,
+   "ndcg@10": 0.4090426201137478,
+   "recall@10": 0.47532517482517483,
+   "recall@100": 0.7127551837051838,
+   "mrr@10": 0.48785873015873016
+  },
   {
    "epoch": 1.0,
    "steps": 443,
-   "ndcg@10": 0.398197925100492,
-   "recall@10": 0.4644243811743812,
-   "recall@100": 0.7248945498945498,
-   "mrr@10": 0.4719428571428571
+   "ndcg@10": 0.4045606099275054,
+   "recall@10": 0.47252048507048505,
+   "recall@100": 0.7387780774780774,
+   "mrr@10": 0.47925
   },
   {
    "epoch": 2.0,
    "steps": 886,
-   "ndcg@10": 0.4041997357021745,
-   "recall@10": 0.4706553335553335,
-   "recall@100": 0.730615256965257,
-   "mrr@10": 0.4833920634920635
+   "ndcg@10": 0.40110012593796107,
+   "recall@10": 0.47363159618159617,
+   "recall@100": 0.7382630702630703,
+   "mrr@10": 0.47630873015873015
   }
  ],
- "train_seconds": 220.10300249990541,
- "dev_eval_seconds": 76.71757460013032,
+ "train_seconds": 99.61575770005584,
+ "dev_eval_seconds": 94.25659909995738,
+ "epochs_run": 2.0,
  "global_steps": 886,
- "peak_vram_gb": 2.4135489463806152,
- "best_dev_ndcg@10": 0.4041997357021745,
- "note": "first run, made before the dev-only sweep existed; its test score was printed once",
- "test_ndcg@10_seen_before_sweep": 0.39629046970711057
+ "peak_vram_gb": 2.4135489463806152
 }

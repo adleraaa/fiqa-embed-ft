@@ -5,37 +5,57 @@
  "seed": 1,
  "config": {
   "base_model": "BAAI/bge-small-en-v1.5",
-  "epochs_max": 2,
+  "base_model_revision": "5c38ec7c405ec4b44b94cc5a9bb96e735b38267a",
+  "epochs_max": 4,
+  "patience": 2,
   "batch_size": 32,
+  "gradcache_mini_batch": null,
   "lr": 5e-06,
   "train_max_seq_length": 256,
   "lora_rank": null,
   "train_examples": 14166,
   "trainable_params": 33360000,
-  "gpu": "NVIDIA GeForce RTX 5070 Laptop GPU"
+  "gpu": "NVIDIA GeForce RTX 5070 Laptop GPU",
+  "versions": {
+   "torch": "2.9.0+cu129",
+   "cuda": "12.9",
+   "sentence_transformers": "6.1.0",
+   "transformers": "5.17.0"
+  }
  },
+ "base_dev_ndcg@10": 0.4090426201137478,
  "best_dev_epoch": 2.0,
- "best_dev_ndcg@10": 0.4001342023578783,
+ "best_dev_ndcg@10": 0.4080526765250494,
+ "base_won_on_dev": true,
  "dev_history": [
+  {
+   "epoch": 0,
+   "steps": 0,
+   "ndcg@10": 0.4090426201137478,
+   "recall@10": 0.47532517482517483,
+   "recall@100": 0.7127551837051838,
+   "mrr@10": 0.48785873015873016
+  },
   {
    "epoch": 1.0,
    "steps": 443,
-   "ndcg@10": 0.39519959451075,
-   "recall@10": 0.4519854922854923,
-   "recall@100": 0.7136962093462094,
-   "mrr@10": 0.47861507936507935
+   "ndcg@10": 0.39871533992229774,
+   "recall@10": 0.45510533355533356,
+   "recall@100": 0.7190686258186259,
+   "mrr@10": 0.4854174603174603
   },
   {
    "epoch": 2.0,
    "steps": 886,
-   "ndcg@10": 0.4001342023578783,
-   "recall@10": 0.4599854922854923,
-   "recall@100": 0.7202002497502498,
-   "mrr@10": 0.481997619047619
+   "ndcg@10": 0.4080526765250494,
+   "recall@10": 0.4683966033966034,
+   "recall@100": 0.7368630702630703,
+   "mrr@10": 0.4930920634920635
   }
  ],
- "train_seconds": 208.14497530006338,
- "dev_eval_seconds": 71.81832509988453,
+ "train_seconds": 102.95936679991428,
+ "dev_eval_seconds": 91.19386230001692,
+ "epochs_run": 2.0,
  "global_steps": 886,
  "peak_vram_gb": 2.4135489463806152
 }

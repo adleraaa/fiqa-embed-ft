@@ -5,37 +5,73 @@
  "seed": 1,
  "config": {
   "base_model": "BAAI/bge-small-en-v1.5",
-  "epochs_max": 2,
+  "base_model_revision": "5c38ec7c405ec4b44b94cc5a9bb96e735b38267a",
+  "epochs_max": 4,
+  "patience": 2,
   "batch_size": 32,
+  "gradcache_mini_batch": null,
   "lr": 5e-06,
   "train_max_seq_length": 256,
   "lora_rank": null,
   "train_examples": 14166,
   "trainable_params": 33360000,
-  "gpu": "NVIDIA GeForce RTX 5070 Laptop GPU"
+  "gpu": "NVIDIA GeForce RTX 5070 Laptop GPU",
+  "versions": {
+   "torch": "2.9.0+cu129",
+   "cuda": "12.9",
+   "sentence_transformers": "6.1.0",
+   "transformers": "5.17.0"
+  }
  },
- "best_dev_epoch": 1.0,
- "best_dev_ndcg@10": 0.403557656320932,
+ "base_dev_ndcg@10": 0.4090426201137478,
+ "best_dev_epoch": 4.0,
+ "best_dev_ndcg@10": 0.4162099900977696,
+ "base_won_on_dev": false,
  "dev_history": [
+  {
+   "epoch": 0,
+   "steps": 0,
+   "ndcg@10": 0.4090426201137478,
+   "recall@10": 0.47532517482517483,
+   "recall@100": 0.7127551837051838,
+   "mrr@10": 0.48785873015873016
+  },
   {
    "epoch": 1.0,
    "steps": 443,
-   "ndcg@10": 0.403557656320932,
-   "recall@10": 0.4653299367299367,
-   "recall@100": 0.7192850982350982,
-   "mrr@10": 0.48536190476190477
+   "ndcg@10": 0.4084590809652814,
+   "recall@10": 0.469099777999778,
+   "recall@100": 0.7266019591519591,
+   "mrr@10": 0.48984841269841267
   },
   {
    "epoch": 2.0,
    "steps": 886,
-   "ndcg@10": 0.4027785223860048,
-   "recall@10": 0.46538787323787323,
-   "recall@100": 0.7260446941946942,
-   "mrr@10": 0.4832373015873016
+   "ndcg@10": 0.4140928960370125,
+   "recall@10": 0.4812608891108891,
+   "recall@100": 0.7424098956598957,
+   "mrr@10": 0.4941746031746032
+  },
+  {
+   "epoch": 3.0,
+   "steps": 1329,
+   "ndcg@10": 0.41558386121460467,
+   "recall@10": 0.480899777999778,
+   "recall@100": 0.7389256965256965,
+   "mrr@10": 0.4948809523809524
+  },
+  {
+   "epoch": 4.0,
+   "steps": 1772,
+   "ndcg@10": 0.4162099900977696,
+   "recall@10": 0.48327755577755577,
+   "recall@100": 0.7402280774780775,
+   "mrr@10": 0.4955968253968254
   }
  ],
- "train_seconds": 249.82274750014767,
- "dev_eval_seconds": 73.6587538998574,
- "global_steps": 886,
+ "train_seconds": 356.6131650998723,
+ "dev_eval_seconds": 181.94119660009164,
+ "epochs_run": 4.0,
+ "global_steps": 1772,
  "peak_vram_gb": 3.9952731132507324
 }
