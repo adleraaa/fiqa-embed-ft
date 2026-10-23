@@ -25,13 +25,6 @@ Holm correction over all 38 tests reported.
 
 ![Paired differences vs zero-shot](results/deltas.png)
 
-## How this was built
-
-This project was built with [Claude Code](https://claude.com/claude-code), an AI coding agent.
-All 10 commits made on September 28–29, 2026 (US Eastern) carry a `Co-Authored-By: Claude`
-trailer, and later README edits were also made with Claude Code. The numbers in this README come
-from the scripts and result files in this repository.
-
 ## Results
 
 FiQA-2018 test split, full-corpus exact search, 512-token documents, fp32 inference.
