@@ -27,9 +27,10 @@ Holm correction over all 38 tests reported.
 
 ## How this was built
 
-This project was built with [Claude Code](https://claude.com/claude-code), an AI coding agent,
-between September 28 and 29, 2026 (10 of 10 commits carry a `Co-Authored-By: Claude` trailer).
-The numbers in this README come from the scripts and result files in this repository.
+This project was built with [Claude Code](https://claude.com/claude-code), an AI coding agent.
+All 10 commits made on September 28–29, 2026 (US Eastern) carry a `Co-Authored-By: Claude`
+trailer, and later README edits were also made with Claude Code. The numbers in this README come
+from the scripts and result files in this repository.
 
 ## Results
 
