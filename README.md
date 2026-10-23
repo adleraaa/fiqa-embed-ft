@@ -25,6 +25,12 @@ Holm correction over all 38 tests reported.
 
 ![Paired differences vs zero-shot](results/deltas.png)
 
+## How this was built
+
+This project was built with [Claude Code](https://claude.com/claude-code), an AI coding agent,
+between September 28 and 29, 2026 (10 of 10 commits carry a `Co-Authored-By: Claude` trailer).
+The numbers in this README come from the scripts and result files in this repository.
+
 ## Results
 
 FiQA-2018 test split, full-corpus exact search, 512-token documents, fp32 inference.
@@ -76,8 +82,9 @@ What the numbers say:
   (dense arms, 4 epochs); LoRA on arm (c) took 534 s. Dev evaluation costs about 45 s
   per epoch (84 s with LoRA), and mining dense candidates about 46 s. Peak memory was
   2.41 GB for pairs, 4.00 GB for triplets and 2.20 GB with GradCache mini-batches of 32.
-  LoRA did not lower peak memory (2.70 / 4.76 GB). We did not profile why; our guess is
-  that activations, not the optimizer state of 33M parameters, dominate at this size.
+  LoRA did not lower peak memory (2.70 / 4.76 GB). This was not profiled; one possible
+  explanation is that activations, not the optimizer state of 33M parameters, dominate at
+  this size.
 
 **Learning-rate search** ([results/sweep/summary.md](results/sweep/summary.md)): dev
 only, seed 1, grid 5e-6 to 1e-4, same epoch cap and early stopping as the final runs.
@@ -200,10 +207,10 @@ works, with versions that may differ from the ones used here.
 - The margin arm is partly a mixture: 25.4% of its pairs got random, easy negatives
   because no candidate passed the filter. This was not separated from the effect of
   removing likely false negatives.
-- One dataset, one base model. We do not know whether FiQA-like data was part of the
+- One dataset, one base model. It is not known whether FiQA-like data was part of the
   bge-v1.5 training mix, which would explain why fine-tuning adds so little.
 
-**What I would do next:** let early stopping measure improvement over the best
+**Possible next steps:** let early stopping measure improvement over the best
 fine-tuned epoch rather than the base model, and raise the epoch cap; replace the
 random fallback in the margin arm with the next-best candidate below the margin to
 isolate the filter's effect; tune lr per arm.
